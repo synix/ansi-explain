@@ -9,7 +9,19 @@ export default function App() {
   const topRef = useRef<HTMLDivElement>(null);
 
   function handleSelect(seq: string) {
-    setInput(seq);
+    const rand = (min: number, max: number) =>
+      Math.floor(Math.random() * (max - min + 1)) + min;
+    const generators: Record<string, () => number> = {
+      n: () => rand(1, 20),
+      m: () => rand(1, 80),
+      r: () => rand(0, 255),
+      g: () => rand(0, 255),
+      b: () => rand(0, 255),
+    };
+    setInput(seq.replace(/\{(\w+)\}/g, (_, key) => {
+      const gen = generators[key];
+      return gen ? String(gen()) : String(rand(1, 10));
+    }));
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
